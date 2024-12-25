@@ -1,6 +1,9 @@
 - name: configure backend server
   hosts: backend
   become: yes
+  vars:
+    mysql_root_password: ExpenseApp@1
+    login_host: haritha.shop
   tasks:
   - name: disable default nodejs
     ansible.builtin.command: dnf module disable nodejs -y
@@ -52,4 +55,10 @@
       login_host: "{{ login_host }}"
       target: /app/schema/backend.sql
       name: all
-      state: dump
+      state: import
+
+      - name: daemon reload
+        ansible.builtin.systemd_service:
+          daemon_reload: true
+          state: restarted
+          name: backend
